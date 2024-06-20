@@ -19,7 +19,7 @@ class BluetoothService: NSObject, ObservableObject, CBCentralManagerDelegate {
 
     func startScanning() {
         if centralManager.state == .poweredOn {
-            centralManager.scanForPeripherals(withServices: [CBUUID(string: "")], options: nil)
+            centralManager.scanForPeripherals(withServices: nil)
             print("Scanning started...")
         } else {
             print("Bluetooth is not powered on")
