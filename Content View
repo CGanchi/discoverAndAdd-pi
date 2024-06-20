@@ -1,0 +1,29 @@
+import SwiftUI
+
+struct ContentView: View {
+    @ObservedObject var bluetoothService = BluetoothService()
+
+    var body: some View {
+        NavigationView {
+            List {
+                if bluetoothService.centralManager.isScanning {
+                    Text("Scanning for devices...")
+                }
+                ForEach(bluetoothService.discoveredPis, id: \.identifier) { pi in
+                    Button(action: {
+                        bluetoothService.connectToPi(peripheral: pi)
+                    }) {
+                        Text(pi.name ?? "Unknown device")
+                    }
+                }
+            }
+            .navigationBarTitle("Discover Raspberry Pi")
+            .onAppear {
+                bluetoothService.startScanning()
+            }
+            .onDisappear {
+                bluetoothService.stopScanning()
+            }
+        }
+    }
+}
