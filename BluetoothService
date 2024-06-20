@@ -1,0 +1,47 @@
+import CoreBluetooth
+
+class BluetoothService: NSObject, ObservableObject, CBCentralManagerDelegate {
+    var centralManager: CBCentralManager!
+    @Published var discoveredPis = [CBPeripheral]()
+
+    override init() {
+        super.init()
+        centralManager = CBCentralManager(delegate: self, queue: nil)
+    }
+
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        if central.state == .poweredOn {
+            print("Bluetooth is ON")
+        } else {
+            print("Bluetooth is not available")
+        }
+    }
+
+    func startScanning() {
+        if centralManager.state == .poweredOn {
+            centralManager.scanForPeripherals(withServices: [CBUUID(string: "")], options: nil)
+            print("Scanning started...")
+        } else {
+            print("Bluetooth is not powered on")
+        }
+    }
+
+    func stopScanning() {
+        if centralManager.isScanning {
+            centralManager.stopScan()
+            print("Scanning stopped")
+        }
+    }
+
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
+
+                self.discoveredPis.append(peripheral)
+                print("Discovered \(peripheral.name ?? "unknown")")
+    
+        }
+
+    func connectToPi(peripheral: CBPeripheral) {
+        centralManager.connect(peripheral, options: nil)
+        print("Attempting to connect to \(peripheral.name ?? "unknown")")
+    }
+}
